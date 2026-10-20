@@ -1,0 +1,12 @@
+# Dependências
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Sistema Operacional
+Thumbs.db
+Desktop.ini
+.DS_Store
