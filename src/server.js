@@ -288,10 +288,14 @@ app.get('/api/stats', (req, res) => {
   }
 });
 
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`=======================================================`);
-  console.log(`  EcoGuard - Servidor Ativo na porta ${PORT}`);
-  console.log(`  Acesse no navegador: http://localhost:${PORT}`);
-  console.log(`=======================================================`);
-});
+// Iniciar servidor se executado diretamente
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`=======================================================`);
+    console.log(`  EcoGuard - Servidor Ativo na porta ${PORT}`);
+    console.log(`  Acesse no navegador: http://localhost:${PORT}`);
+    console.log(`=======================================================`);
+  });
+}
+
+module.exports = app;

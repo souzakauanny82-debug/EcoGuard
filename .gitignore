@@ -1,6 +1,11 @@
 # Dependências
 node_modules/
 
+# Variáveis de Ambiente e Segredos (NUNCA commitar arquivos .env reais)
+.env
+.env.local
+.env.*.local
+
 # Logs
 npm-debug.log*
 yarn-debug.log*

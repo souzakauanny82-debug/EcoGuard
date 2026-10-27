@@ -2,7 +2,7 @@ const { DatabaseSync } = require('node:sqlite');
 const path = require('path');
 const { hashPassword } = require('./crypto_util');
 
-const DB_PATH = path.join(__dirname, '..', 'ecoguard.db');
+const DB_PATH = process.env.DB_PATH ? path.resolve(process.env.DB_PATH) : path.join(__dirname, '..', 'ecoguard.db');
 const db = new DatabaseSync(DB_PATH);
 
 // Habilitar integridade referencial de chave estrangeira
