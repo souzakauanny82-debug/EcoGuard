@@ -6,6 +6,7 @@
 **Professor:** Rafael Pitwak  
 **Projeto:** EcoGuard — Sistema de Monitoramento e Registro de Ocorrências Ambientais  
 **Repositório Oficial:** [https://github.com/souzakauanny82-debug/EcoGuard](https://github.com/souzakauanny82-debug/EcoGuard)  
+**Sistema Publicado no Ar (Deploy):** [https://ecoguard-1-ucuj.onrender.com/](https://ecoguard-1-ucuj.onrender.com/)  
 
 ---
 

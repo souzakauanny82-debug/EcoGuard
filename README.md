@@ -6,6 +6,7 @@
 > **Disciplina:** Programar com IA de forma responsável  
 > **Professor:** Rafael Pitwak  
 > **Repositório GitHub:** [https://github.com/souzakauanny82-debug/EcoGuard](https://github.com/souzakauanny82-debug/EcoGuard)  
+> **Sistema Publicado no Ar (URL):** [https://ecoguard-1-ucuj.onrender.com/](https://ecoguard-1-ucuj.onrender.com/)  
 
 ---
 
