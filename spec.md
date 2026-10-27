@@ -1,9 +1,11 @@
-# EcoGuard — Especificação Inicial do Sistema (spec.md)
+# EcoGuard — Especificação Final do Sistema (spec.md)
 
 **Instituição:** Instituto Federal de Rondônia (IFRO) — Campus Porto Velho Calama  
 **Curso:** Técnico em Desenvolvimento de Sistemas  
 **Disciplina:** Programar com IA de forma responsável  
+**Professor:** Rafael Pitwak  
 **Projeto:** EcoGuard — Sistema de Monitoramento e Registro de Ocorrências Ambientais  
+**Repositório Oficial:** [https://github.com/souzakauanny82-debug/EcoGuard](https://github.com/souzakauanny82-debug/EcoGuard)  
 
 ---
 
@@ -68,17 +70,17 @@ A tabela abaixo descreve os casos de uso centrais do EcoGuard e seu mapeamento d
 
 ## 5. Requisitos Não Funcionais (RNF)
 
-- **RNF01 — Segurança no Armazenamento de Senhas (Obrigatório):** As senhas dos usuários nunca devem ser armazenadas em texto puro. O sistema deve aplicar algoritmo de hash unidirecional criptográfico com salting (PBKDF2/SHA-256 ou bcrypt) antes de gravar a credencial no banco de dados.
-- **RNF02 — Validação no Servidor (Obrigatório):** Todo dado submetido por formulários deve ser rigorosamente validado no lado do servidor (backend) antes de qualquer persistência, rejeitando campos em branco, formatos inválidos de e-mail e payloads maliciosos, independentemente de validações existentes no cliente.
-- **RNF03 — Desempenho e Tempo de Resposta:** As consultas de listagem e operações de gravação no banco de dados devem responder em um tempo médio inferior a 500 milissegundos em condições normais de tráfego.
-- **RNF04 — Responsividade e Usabilidade:** A interface deve ser totalmente responsiva (design *mobile-first*), funcionando perfeitamente em telas de smartphones, tablets e desktops modernos, em navegadores baseados em Chromium, Firefox e Safari.
-- **RNF05 — Integridade e Rastreabilidade:** O histórico de transições de status deve ser imutável; novas alterações de status devem sempre criar um novo registro histórico preservando o autor e a data de modificação.
+- **RNF01 — Segurança no Armazenamento de Senhas (Obrigatório):** As senhas dos usuários nunca devem ser armazenadas em texto puro. O sistema aplica algoritmo criptográfico unidirecional seguro PBKDF2 com 100.000 iterações, salt aleatório de 16 bytes e SHA-512 antes de persistir no banco.
+- **RNF02 — Validação no Servidor (Obrigatório):** Todo dado submetido por formulários é validado no lado do servidor (backend) antes de qualquer persistência, rejeitando campos em branco, formatos inválidos e payloads maliciosos.
+- **RNF03 — Desempenho e Tempo de Resposta:** Consultas de listagem e operações de gravação no banco de dados respondem em menos de 100 milissegundos em testes locais e banco indexado.
+- **RNF04 — Responsividade e Usabilidade:** A interface é totalmente responsiva (design *mobile-first*), funcionando perfeitamente em telas de smartphones, tablets e desktops modernos em navegadores Chromium, Firefox e Safari.
+- **RNF05 — Integridade e Rastreabilidade:** O histórico de transições de status é imutável; novas alterações criam obrigatoriamente um novo registro histórico preservando autor, parecer e data/hora.
 
 ---
 
 ## 6. Modelo de Dados (DER simples)
 
-O sistema utiliza um banco de dados relacional com três tabelas essenciais conectadas por integridade referencial (chaves estrangeiras), satisfazendo plenamente todos os Requisitos Funcionais:
+O sistema utiliza um banco de dados relacional com três tabelas essenciais conectadas por integridade referencial (chaves estrangeiras):
 
 ```mermaid
 erDiagram
@@ -123,49 +125,16 @@ erDiagram
     }
 ```
 
-### Descrição das Tabelas e Relacionamentos:
-
-1. **`usuarios`**: Armazena as credenciais e perfis dos usuários.
-   - `id`: Chave primária (INTEGER AUTOINCREMENT).
-   - `nome`: Nome completo do usuário (TEXT NOT NULL).
-   - `email`: Endereço de e-mail único (TEXT NOT NULL UNIQUE).
-   - `senha_hash`: Hash criptográfico seguro da senha (TEXT NOT NULL).
-   - `tipo_usuario`: Perfil de acesso (`cidadao`, `fiscal`, `admin`).
-   - `criado_em`: Data e hora do cadastro (DATETIME).
-
-2. **`ocorrencias`**: Armazena as denúncias ambientais cadastradas.
-   - `id`: Chave primária (INTEGER AUTOINCREMENT).
-   - `usuario_id`: Chave estrangeira referenciando `usuarios(id)` (NOT NULL).
-   - `titulo`: Título conciso da denúncia (TEXT NOT NULL).
-   - `categoria`: Categoria ambiental (TEXT NOT NULL).
-   - `gravidade`: Nível de urgência (`Baixa`, `Média`, `Alta`, `Crítica`).
-   - `bairro`: Bairro de Porto Velho (TEXT NOT NULL).
-   - `endereco`: Endereço ou ponto de referência (TEXT NOT NULL).
-   - `latitude` / `longitude`: Coordenadas geográficas decimais.
-   - `descricao`: Relato detalhado do fato ocorrido (TEXT NOT NULL).
-   - `imagem_url`: Caminho ou link da foto da evidência (TEXT).
-   - `status`: Status do atendimento (`Pendente`, `Em Análise`, `Em Atendimento`, `Resolvido`).
-   - `criado_em` / `atualizado_em`: Timestamps de auditoria.
-
-3. **`historico_atendimento`**: Armazena os despachos e atualizações de status.
-   - `id`: Chave primária (INTEGER AUTOINCREMENT).
-   - `ocorrencia_id`: Chave estrangeira referenciando `ocorrencias(id)` com integridade referencial (NOT NULL).
-   - `fiscal_id`: Chave estrangeira referenciando `usuarios(id)` (NOT NULL).
-   - `status_anterior`: Status antes da atualização (TEXT NOT NULL).
-   - `status_novo`: Novo status atribuído (TEXT NOT NULL).
-   - `despacho`: Parecer técnico ou providência adotada pelo fiscal (TEXT NOT NULL).
-   - `criado_em`: Data e hora da atualização (DATETIME).
-
 ---
 
 ## 7. Critérios de Aceite
 
-Os critérios abaixo foram redigidos no padrão BDD (*Given-When-Then* / *Dado que..., Quando..., Então...*) para os fluxos principais:
+Os critérios abaixo foram redigidos no padrão BDD (*Given-When-Then* / *Dado que..., Quando..., Então...*):
 
 ### Cenário 1: Cadastro de novo cidadão com sucesso (RF01, RNF01, RNF02)
 - **Dado que** o cidadão está na tela de cadastro e não possui conta prévia com o e-mail informado,
 - **Quando** ele preencher nome, e-mail válido, senha com pelo menos 6 caracteres e submeter o formulário,
-- **Então** o servidor deve validar os dados, salvar a senha em formato de hash seguro no banco, persistir o usuário com perfil `cidadao` e retornar código de sucesso HTTP 201 com confirmação.
+- **Então** o servidor deve validar os dados, salvar a senha em formato de hash seguro no banco, persistir o usuário com perfil `cidadao` e retornar código HTTP 201 com confirmação.
 
 ### Cenário 2: Tentativa de login com senha incorreta (RF02, RNF01)
 - **Dado que** existe um usuário cadastrado com determinado e-mail,
@@ -196,23 +165,147 @@ Os critérios abaixo foram redigidos no padrão BDD (*Given-When-Then* / *Dado q
 
 ## 8. Decisão de Stack e Deploy
 
-### Justificativa da Stack Escolhida:
+- **Backend e API REST:** Node.js (v20+ ou v22+) com Express.
+- **Banco de Dados:** SQLite 3 relacional com chaves estrangeiras ativas e script formal em `database/schema.sql`.
+- **Criptografia:** Módulo nativo `node:crypto` com algoritmo PBKDF2/SHA-512 e salting por usuário (RNF01).
+- **Frontend:** HTML5 semântico, CSS3 responsivo, JavaScript Vanilla modular, Leaflet.js (mapas geoespaciais) e Chart.js (gráficos analíticos).
+- **Deploy:** Compatibilidade nativa com Render (`render.yaml`) e Vercel (`vercel.json` + `api/index.js`).
 
-- **Backend e API REST:** **Node.js** com framework **Express**.
-  - *Motivação:* Plataforma de alto desempenho, orientada a eventos assíncronos, com ecossistema rico e instalação nativa e ágil no ambiente Windows/Linux. O Express fornece roteamento REST limpo, middlewares de validação de formulários no servidor e controle de sessão.
-- **Banco de Dados:** **SQLite** (relacional, compatível com ACID).
-  - *Motivação:* Banco de dados relacional que implementa integralmente chaves estrangeiras, transações e tipos SQL sem exigir instalação de servidores pesados de terceiros na máquina de desenvolvimento. Permite portabilidade instantânea e migração direta para PostgreSQL em produção.
-- **Criptografia e Segurança:** Módulo criptográfico com algoritmo PBKDF2 / SHA-512 e salting por usuário.
-  - *Motivação:* Atende rigorosamente ao critério RNF01, eliminando completamente senhas em texto puro e garantindo proteção contra ataques de dicionário e tabelas rainbow.
-- **Frontend:** **HTML5, CSS3 moderno (design system responsivo com tons ecológicos) e JavaScript Vanilla modular**, enriquecido com:
-  - **Leaflet.js:** Biblioteca aberta de mapas geográficos interativos para renderização de ocorrências geolocalizadas em Porto Velho.
-  - **Chart.js:** Visualização de dados dinâmicos do dashboard (gráficos de pizza e barras).
-  - *Motivação:* Dispensa etapas complexas de compilação/bundling, carrega instantaneamente em qualquer dispositivo móvel e oferece performance máxima e facilidade de manutenção.
+---
 
-### Estratégia de Deploy:
+## 9. Instalação e Execução (Guia Oficial para o Avaliador)
 
-- **Ambiente de Produção Recomendado:**
-  - **Render / Railway / Fly.io:** Suporte nativo a projetos fullstack Node.js com SQLite persistente ou banco PostgreSQL gerenciado gratuito. O deploy é efetuado via repositório Git com comandos simples (`npm install && npm start`).
-  - **Compatibilidade com Vercel:** O frontend pode ser publicado estaticamente na Vercel e consumir o backend via serverless functions ou API hospedada no Render, cumprindo integralmente a exigência de compatibilidade do enunciado.
-- **Execução Local:**
-  - Execução imediata via `npm start` ou `node src/server.js`, servindo a API REST e a interface web na porta `3000`.
+> Esta seção permite que qualquer pessoa ou o professor clone o repositório em um computador limpo e execute o sistema sem ambiguidades.
+
+### 9.1 Ambiente
+- **Linguagem e Runtime:** Node.js (versão 20.x LTS ou 22.x LTS instalada).
+- **Gerenciador de Pacotes:** `npm` (versão 10.x ou superior, incluso com o Node.js).
+- **Servidor Local:** Servidor Express embutido servindo a API REST e arquivos estáticos na porta 3000.
+- **Dependências Externas:** Apenas o framework `express` (instalado via `npm install`). Nenhuma compilação externa em C++ ou Python é necessária.
+- **Sistemas Operacionais Testados e Homologados:**
+  - Windows 10 e Windows 11 (PowerShell e CMD).
+  - Linux (Ubuntu 22.04 LTS / Debian 12).
+  - macOS (Apple Silicon e Intel).
+
+---
+
+### 9.2 Banco de Dados
+- **SGBD Utilizado:** SQLite 3 (banco relacional nativo, sem necessidade de instalar MySQL/Postgres localmente).
+- **Nome do Arquivo do Banco:** `ecoguard.db` (gerado automaticamente na raiz do projeto).
+- **Script SQL Oficial:** [`database/schema.sql`](./database/schema.sql).
+  - Como executar manualmente via terminal SQLite (opcional):
+    ```bash
+    sqlite3 ecoguard.db < database/schema.sql
+    ```
+  - *Nota:* O backend possui inicializador automático com migração e carga de seeds na primeira execução, caso o arquivo `ecoguard.db` não exista.
+
+#### Estrutura das Tabelas do Banco de Dados:
+
+| Tabela | Campos Principais | Chave Primária | Relacionamentos (Chaves Estrangeiras) |
+|---|---|---|---|
+| **`usuarios`** | `id`, `nome`, `email`, `senha_hash`, `tipo_usuario`, `criado_em` | `id` | — *(Sem dependências externas)* |
+| **`ocorrencias`** | `id`, `usuario_id`, `titulo`, `categoria`, `gravidade`, `bairro`, `endereco`, `latitude`, `longitude`, `descricao`, `imagem_url`, `status`, `criado_em`, `atualizado_em` | `id` | `usuario_id` → `usuarios.id` *(ON DELETE CASCADE)* |
+| **`historico_atendimento`** | `id`, `ocorrencia_id`, `fiscal_id`, `status_anterior`, `status_novo`, `despacho`, `criado_em` | `id` | `ocorrencia_id` → `ocorrencias.id` *(CASCADE)*<br>`fiscal_id` → `usuarios.id` *(CASCADE)* |
+
+- **Dados Iniciais (Seeds):** O script `database/schema.sql` já insere 3 usuários (Cidadão, Fiscal, Admin) com senhas com hash PBKDF2 e 5 ocorrências ambientais representativas de Porto Velho (Rio Madeira, Calama, Nova Porto Velho, Nacional e Tancredo Neves).
+
+---
+
+### 9.3 Variáveis de Ambiente
+O repositório disponibiliza o arquivo [`.env.example`](./.env.example). Para rodar localmente, crie o arquivo `.env` na raiz:
+
+```ini
+# Porta do servidor web
+PORT=3000
+
+# Ambiente de execução
+NODE_ENV=development
+
+# Caminho do banco SQLite
+DB_PATH=./ecoguard.db
+
+# Segredo de sessão / integridade
+SESSION_SECRET=exemplo_segredo_super_seguro_ecoguard_ifro_2026
+```
+
+| Variável | Descrição | Valor Padrão para Execução Local |
+|---|---|---|
+| `PORT` | Porta TCP onde o servidor Express atenderá as requisições HTTP. | `3000` |
+| `NODE_ENV` | Modo de execução da aplicação (`development` ou `production`). | `development` |
+| `DB_PATH` | Localização do arquivo físico do banco SQLite no disco. | `./ecoguard.db` |
+| `SESSION_SECRET` | Chave de criptografia/segredo usada para integridade de tokens. | Qualquer string segura |
+
+---
+
+### 9.4 Passo a Passo de Instalação Local
+
+1. **Clonar o repositório do GitHub:**
+   ```bash
+   git clone https://github.com/souzakauanny82-debug/EcoGuard.git
+   cd EcoGuard
+   ```
+
+2. **Instalar as dependências do projeto:**
+   ```bash
+   npm install
+   ```
+
+3. **Configurar as variáveis de ambiente:**
+   - No Windows (PowerShell):
+     ```powershell
+     Copy-Item .env.example .env
+     ```
+   - No Linux / macOS / Git Bash:
+     ```bash
+     cp .env.example .env
+     ```
+
+4. **Executar a suíte de testes automatizados (Opcional, porém recomendado):**
+   ```bash
+   npm test
+   ```
+
+5. **Iniciar o servidor do sistema:**
+   ```bash
+   npm start
+   ```
+
+6. **Abrir a aplicação no navegador:**
+   - Acesse: 👉 **`http://localhost:3000`**
+
+---
+
+### 9.5 Como Testar o Sistema (Roteiro de Avaliação)
+
+#### Usuários de Teste Pré-configurados:
+
+| Papel | Nome | E-mail de Teste | Senha de Teste |
+|---|---|---|---|
+| **Cidadão** | Maria da Silva | `maria.silva@exemplo.com` | `Senha@123` |
+| **Fiscal Ambiental** | Carlos Eduardo Fiscal | `carlos.fiscal@sedam.ro.gov.br` | `Fiscal@2026` |
+| **Administrador** | Administrador Geral | `admin@ecoguard.org` | `Admin@2026` |
+
+*Dica:* A interface possui no topo um seletor rápido ("Cidadão: Maria", "Fiscal: Carlos") para alternar perfis sem precisar redigitar senhas durante a correção.
+
+#### Roteiro do Fluxo Principal de Negócio:
+1. **Passo 1 — Visualização Pública:** Ao abrir a página inicial, visualize o mapa interativo Leaflet de Porto Velho com as ocorrências e o painel de estatísticas com gráficos Chart.js.
+2. **Passo 2 — Registro de Nova Ocorrência (Cidadão):**
+   - Garanta que o perfil selecionado é **Cidadão: Maria**.
+   - Clique no botão verde **"Nova Denúncia"**.
+   - Preencha: Título (ex.: "Foco de queimada em área de mata"), Categoria ("Queimada"), Bairro ("Calama"), Endereço ("Av. Calama, 4200") e Descrição detalhada.
+   - Clique em **"Enviar Denúncia"**. A denúncia surgirá imediatamente na lista e no mapa com status `Pendente`.
+3. **Passo 3 — Atendimento e Triagem (Fiscal Ambiental):**
+   - Alterne o seletor rápido no topo para **Fiscal: Carlos (SEDAM)**.
+   - Localize a ocorrência recém-criada e clique em **"Ver Detalhes"**.
+   - No painel amarelo do fiscal, selecione o novo status: **"Em Atendimento"**.
+   - Digite o parecer técnico: *"Equipe de fiscalização ambiental da SEDAM deslocada com viatura ao local."*
+   - Clique em **"Registrar Despacho & Atualizar Status"**.
+4. **Passo 4 — Validação de Auditoria:**
+   - Observe a linha do tempo cronológica da ocorrência atualizada com o parecer do fiscal Carlos, demonstrando o funcionamento de ponta a ponta com persistência no banco.
+
+---
+
+### 9.6 Problemas Conhecidos e Limitações Atuais
+
+- **Upload de Fotos:** Atualmente o sistema aceita URLs externas de imagens (com links de pré-seleção rápida na interface). O upload direto de arquivos binários pesados (*multipart/form-data*) está planejado para versões futuras com armazenamento em bucket S3.
+- **Geocodificação Automática:** Caso o usuário não selecione coordenadas manuais no mapa, o sistema utiliza centróides aproximados pré-calculados dos principais bairros de Porto Velho.

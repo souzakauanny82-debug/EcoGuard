@@ -1,92 +1,111 @@
 # EcoGuard — Sistema de Monitoramento e Registro de Ocorrências Ambientais
 
-> **Projeto e Especificação Inicial (Fase 1 e Fase 2)**  
+> **Entrega Final — Projeto Completo, Versionado e Documentado**  
 > **Instituição:** Instituto Federal de Rondônia (IFRO) — Campus Porto Velho Calama  
 > **Curso:** Técnico em Desenvolvimento de Sistemas  
 > **Disciplina:** Programar com IA de forma responsável  
+> **Professor:** Rafael Pitwak  
+> **Repositório GitHub:** [https://github.com/souzakauanny82-debug/EcoGuard](https://github.com/souzakauanny82-debug/EcoGuard)  
 
 ---
 
 ## 📌 Sobre o Projeto
 
-O **EcoGuard** é uma solução completa para gestão e fiscalização de ocorrências ambientais urbanas em Porto Velho - RO. Permite que a comunidade registre denúncias georreferenciadas (queimadas, descarte irregular de lixo, desmatamento urbano e poluição hídrica) e que os fiscais ambientais realizem triagem, atendimento e acompanhamento transparente.
+O **EcoGuard** é uma solução completa para gestão e fiscalização de ocorrências ambientais urbanas em Porto Velho - RO. Permite que a comunidade registre denúncias georreferenciadas (queimadas, descarte irregular de lixo, desmatamento urbano e poluição hídrica) e que os fiscais ambientais realizem triagem, atendimento e acompanhamento transparente com linha do tempo auditável.
 
-Este repositório atende a todos os critérios da **Atividade Avaliativa (Anexo A)** e da especificação técnica descrita no arquivo [`spec.md`](./spec.md).
+Este repositório atende a todos os critérios da **Atividade Avaliativa Final** e da especificação técnica descrita no arquivo [`spec.md`](./spec.md).
+
+---
+
+## 📂 Arquivos Obrigatórios Entregues
+
+1. 📄 **[`spec.md`](./spec.md)** — Especificação técnica final com todas as 9 seções completas, incluindo guia minucioso de instalação, tabelas do banco, variáveis de ambiente e roteiro de testes.
+2. 🗄️ **[`database/schema.sql`](./database/schema.sql)** — Script DDL/DML de criação do banco de dados relacional, tabelas, índices e *seeds* realistas de Porto Velho.
+3. 📝 **[`CHANGELOG.md`](./CHANGELOG.md)** — Registro histórico de decisões arquiteturais, correções e revisões críticas humanas efetuadas sobre as propostas do agente de IA.
+4. ⚙️ **[`.env.example`](./.env.example)** — Modelo de variáveis de ambiente sem exposição de credenciais ou segredos no repositório.
+5. 🚀 **[`render.yaml`](./render.yaml)** e **[`vercel.json`](./vercel.json)** — Configurações automatizadas para deploy gratuito na nuvem.
 
 ---
 
 ## 🏆 Critérios de Avaliação Atendidos (Rubrica IFRO)
 
-| Seção da Spec | Implementação no EcoGuard | Status |
+| Critério Avaliado | Implementação no EcoGuard | Status |
 |---|---|---|
-| **1. Objetivo** | Descrição clara em 3 frases, compreensível em menos de 1 minuto, sem ambiguidades. | **Atende** |
-| **2. Usuários** | 3 perfis definidos (`Cidadão`, `Fiscal Ambiental`, `Administrador`) com todas as ações e permissões. | **Atende** |
-| **3. Casos de Uso** | UC01 a UC07 mapeados 1:1 com os Requisitos Funcionais sem itens soltos. | **Atende** |
-| **4. Requisitos Funcionais** | RF01 a RF07 numerados, testáveis e cobrindo cadastro, login e fluxo completo de denúncia. | **Atende** |
-| **5. Requisitos Não Funcionais** | Senha com hash criptográfico PBKDF2/SHA-512 (**RNF01**) e validação no servidor (**RNF02**). | **Atende** |
-| **6. Modelo de Dados (DER)** | 3 tabelas relacionais (`usuarios`, `ocorrencias`, `historico_atendimento`) com chaves estrangeiras. | **Atende** |
-| **7. Critérios de Aceite** | Cenários no padrão BDD (*Dado que..., Quando..., Então...*) para todos os RFs principais. | **Atende** |
-| **8. Stack e Deploy** | Node.js + Express + SQLite + Leaflet.js, compatível com Render, Railway e Vercel. | **Atende** |
+| **1. Objetivo & Escopo** | Plataforma de combate a crimes ambientais em Porto Velho com foco na Amazônia urbana. | **Atende** |
+| **2. Perfis de Usuários** | 3 perfis definidos (`Cidadão`, `Fiscal Ambiental`, `Administrador`) com permissões associadas. | **Atende** |
+| **3. Casos de Uso & RFs** | UC01 a UC07 mapeados 1:1 com RF01 a RF07 numerados, testáveis e sem itens soltos. | **Atende** |
+| **4. Segurança (RNF01 e RNF02)** | Senhas protegidas com PBKDF2/SHA-512 com salting e validação obrigatória de formulários no servidor. | **Atende** |
+| **5. Modelo de Dados (DER)** | 3 tabelas relacionais (`usuarios`, `ocorrencias`, `historico_atendimento`) com chaves estrangeiras. | **Atende** |
+| **6. Critérios de Aceite BDD** | Cenários no padrão *Dado que..., Quando..., Então...* cobrindo os fluxos principais. | **Atende** |
+| **7. Guia de Instalação na Spec** | Seção 9 completa: ambiente, SGBD, tabelas, variáveis, passo a passo numerado e roteiro de testes. | **Atende** |
+| **8. Histórico Real de Commits** | Histórico real com mensagens semânticas desde o planejamento até a entrega final. | **Atende** |
+| **9. Checklist de Segurança** | Zero credenciais no código-fonte; `.env` ignorado e `.env.example` preenchido. | **Atende** |
+| **10. Colaborador rafaelpitwak** | Professor configurado como colaborador oficial do repositório no GitHub. | **Atende** |
 
 ---
 
-## 🚀 Como Executar o Sistema
+## 🚀 Como Executar o Sistema Localmente
 
 ### Pré-requisitos
-- Node.js versão 20+ ou 22+ (instalado).
+- **Node.js:** Versão 20+ ou 22+ instalada.
+- **Git:** Instalado.
 
-### Passos para Inicialização
-1. Instale as dependências (caso ainda não o tenha feito):
+### Passo a Passo:
+1. **Clonar o repositório:**
+   ```bash
+   git clone https://github.com/souzakauanny82-debug/EcoGuard.git
+   cd EcoGuard
+   ```
+
+2. **Instalar as dependências:**
    ```bash
    npm install
    ```
 
-2. Inicie o servidor da aplicação:
-   ```bash
-   npm start
-   ```
+3. **Configurar as variáveis de ambiente:**
+   - No Windows (PowerShell):
+     ```powershell
+     Copy-Item .env.example .env
+     ```
+   - No Linux/macOS:
+     ```bash
+     cp .env.example .env
+     ```
 
-3. Abra o navegador no endereço:
-   👉 **`http://localhost:3000`**
-
-4. Para executar a suíte de testes automatizados:
+4. **Executar a suíte de testes automatizados:**
    ```bash
    npm test
    ```
 
+5. **Iniciar o servidor:**
+   ```bash
+   npm start
+   ```
+
+6. **Acessar no navegador:**
+   👉 **`http://localhost:3000`**
+
 ---
 
-## 🔑 Contas Pré-configuradas para Testes
+## 🔑 Contas de Teste Pré-configuradas
 
-| Perfil | E-mail | Senha | Função no Sistema |
+| Perfil | E-mail de Teste | Senha de Teste | Ações Disponíveis |
 |---|---|---|---|
-| **Cidadão** | `maria.silva@exemplo.com` | `Senha@123` | Registra e acompanha denúncias |
-| **Fiscal Ambiental** | `carlos.fiscal@sedam.ro.gov.br` | `Fiscal@2026` | Altera status e registra despachos técnicos |
-| **Administrador** | `admin@ecoguard.org` | `Admin@2026` | Gestão completa e monitoramento |
+| **Cidadão** | `maria.silva@exemplo.com` | `Senha@123` | Registra e acompanha ocorrências |
+| **Fiscal Ambiental** | `carlos.fiscal@sedam.ro.gov.br` | `Fiscal@2026` | Altera status e emite pareceres técnicos |
+| **Administrador** | `admin@ecoguard.org` | `Admin@2026` | Monitoramento global do sistema |
 
-*Dica: Você também pode alternar entre os perfis diretamente pelo seletor rápido no topo da página.*
+*Dica: Você pode alternar os perfis instantaneamente através do seletor rápido no topo da página.*
 
 ---
 
-## 📁 Estrutura de Diretórios
+## 🌐 Publicação Online Gratuita (Deploy)
 
-```
-EcoGuard/
-├── Enunciado_Envio_Spec_Inicial.pdf    # Enunciado original da atividade do IFRO
-├── spec.md                            # Especificação técnica completa (8 seções)
-├── README.md                          # Este guia de execução e arquitetura
-├── package.json                       # Configuração e scripts do projeto
-├── ecoguard.db                        # Banco de dados SQLite relacional
-├── src/
-│   ├── crypto_util.js                 # Hashing de senhas seguro PBKDF2/SHA-512 (RNF01)
-│   ├── database.js                    # Schema DER, integridade referencial e seeds
-│   └── server.js                      # API REST com validações estritas no servidor (RNF02)
-├── test/
-│   └── api_test.js                    # Testes automatizados de API e regras de negócio
-└── public/
-    ├── index.html                     # Interface web com Leaflet.js e Chart.js
-    ├── css/
-    │   └── style.css                  # Estilos responsivos em tema ambiental
-    └── js/
-        └── app.js                     # Controlador do frontend e consumo da API
-```
+O repositório já está preparado para deploy no **Render** e na **Vercel**:
+
+### Publicação no Render:
+1. Acesse [render.com](https://render.com) e crie uma conta gratuita conectada ao GitHub.
+2. Clique em **New +** ➔ **Web Service**.
+3. Selecione o repositório `EcoGuard`.
+4. O Render detectará automaticamente o arquivo `render.yaml`. Basta clicar em **Create Web Service**.
+5. Em cerca de 2 minutos, a URL pública estará ativa (ex.: `https://ecoguard-xxxx.onrender.com`).
